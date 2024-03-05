@@ -43,6 +43,9 @@ class EstPlayoff
     #[ORM\Column(length: 255)]
     private ?string $CF = null;
 
+    #[ORM\OneToOne(mappedBy: 'EstPlayoff', cascade: ['persist', 'remove'])]
+    private ?Player $player = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -164,6 +167,28 @@ class EstPlayoff
     public function setCF(string $CF): static
     {
         $this->CF = $CF;
+
+        return $this;
+    }
+
+    public function getPlayer(): ?Player
+    {
+        return $this->player;
+    }
+
+    public function setPlayer(?Player $player): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($player === null && $this->player !== null) {
+            $this->player->setEstPlayoff(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($player !== null && $player->getEstPlayoff() !== $this) {
+            $player->setEstPlayoff($this);
+        }
+
+        $this->player = $player;
 
         return $this;
     }

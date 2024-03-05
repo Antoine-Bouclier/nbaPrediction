@@ -58,6 +58,9 @@ class EstRanking
     #[ORM\Column(length: 255)]
     private ?string $fifteenth = null;
 
+    #[ORM\OneToOne(mappedBy: 'EstRanking', cascade: ['persist', 'remove'])]
+    private ?Player $player = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -239,6 +242,28 @@ class EstRanking
     public function setFifteenth(string $fifteenth): static
     {
         $this->fifteenth = $fifteenth;
+
+        return $this;
+    }
+
+    public function getPlayer(): ?Player
+    {
+        return $this->player;
+    }
+
+    public function setPlayer(?Player $player): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($player === null && $this->player !== null) {
+            $this->player->setEstRanking(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($player !== null && $player->getEstRanking() !== $this) {
+            $player->setEstRanking($this);
+        }
+
+        $this->player = $player;
 
         return $this;
     }

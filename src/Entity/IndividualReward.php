@@ -31,6 +31,9 @@ class IndividualReward
     #[ORM\Column(length: 255)]
     private ?string $BC = null;
 
+    #[ORM\OneToOne(mappedBy: 'IndividualReward', cascade: ['persist', 'remove'])]
+    private ?Player $player = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,6 +107,28 @@ class IndividualReward
     public function setBC(string $BC): static
     {
         $this->BC = $BC;
+
+        return $this;
+    }
+
+    public function getPlayer(): ?Player
+    {
+        return $this->player;
+    }
+
+    public function setPlayer(?Player $player): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($player === null && $this->player !== null) {
+            $this->player->setIndividualReward(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($player !== null && $player->getIndividualReward() !== $this) {
+            $player->setIndividualReward($this);
+        }
+
+        $this->player = $player;
 
         return $this;
     }
